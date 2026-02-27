@@ -1,13 +1,17 @@
-//Subclase Cliente Estandar
 public class ClienteEstandar extends Cliente {
 
-    //Constructor
+    // =========================
+    // CONSTRUCTOR
+    // =========================
     public ClienteEstandar(String email, String nombre, String domicilio, String nif) {
         super(email, nombre, domicilio, nif);
     }
 
+    // =========================
+    // TEXTO PARA MOSTRAR EL CLIENTE ESTÁNDAR
+    // =========================
     @Override
     public String toString() {
-        return "[ESTÁNDAR] " + super.toString();
+        return "[CLIENTE ESTÁNDAR] " + super.toString();
     }
 }

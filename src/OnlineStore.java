@@ -2,147 +2,221 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class OnlineStore {
+
+    // =========================
+    // LISTAS PRINCIPALES
+    // Aquí guardamos todos los datos
+    // =========================
     private ArrayList<Cliente> clientes;
     private ArrayList<Articulo> articulos;
     private ArrayList<Pedido> pedidos;
 
-    // Constructor
+    // Este número sirve para que cada pedido tenga
+    // un número distinto aunque se borre alguno
+    private int siguienteNumeroPedido;
+
+    // =========================
+    // CONSTRUCTOR
+    // Crea las listas vacías al empezar
+    // =========================
     public OnlineStore() {
-        this.clientes = new ArrayList<>();
-        this.articulos = new ArrayList<>();
-        this.pedidos = new ArrayList<>();
+        clientes = new ArrayList<>();
+        articulos = new ArrayList<>();
+        pedidos = new ArrayList<>();
+        siguienteNumeroPedido = 1;
     }
 
-    // ========== MÉTODOS DE CLIENTES ==========
+    // =========================
+    // CLIENTES
+    // =========================
 
-    public void añadirCliente(Cliente cliente) {
+    // Añade un cliente solo si no existe otro con el mismo email
+    public boolean añadirCliente(Cliente cliente) {
+        if (buscarCliente(cliente.getEmail()) != null) {
+            return false;
+        }
+
         clientes.add(cliente);
+        return true;
     }
 
+    // Busca un cliente por su email
     public Cliente buscarCliente(String email) {
         for (int i = 0; i < clientes.size(); i++) {
-            if (clientes.get(i).getEmail().equals(email)) {
+            if (clientes.get(i).getEmail().equalsIgnoreCase(email)) {
                 return clientes.get(i);
             }
         }
         return null;
     }
 
+    // Devuelve todos los clientes
     public ArrayList<Cliente> obtenerTodosClientes() {
-        return clientes;
+        return new ArrayList<>(clientes);
     }
 
+    // Devuelve solo los clientes estándar
     public ArrayList<Cliente> obtenerClientesEstandar() {
-        ArrayList<Cliente> estandares = new ArrayList<>();
+        ArrayList<Cliente> lista = new ArrayList<>();
+
         for (int i = 0; i < clientes.size(); i++) {
             if (clientes.get(i) instanceof ClienteEstandar) {
-                estandares.add(clientes.get(i));
+                lista.add(clientes.get(i));
             }
         }
-        return estandares;
+
+        return lista;
     }
 
+    // Devuelve solo los clientes premium
     public ArrayList<Cliente> obtenerClientesPremium() {
-        ArrayList<Cliente> premiums = new ArrayList<>();
+        ArrayList<Cliente> lista = new ArrayList<>();
+
         for (int i = 0; i < clientes.size(); i++) {
             if (clientes.get(i) instanceof ClientePremium) {
-                premiums.add(clientes.get(i));
+                lista.add(clientes.get(i));
             }
         }
-        return premiums;
+
+        return lista;
     }
 
-    // ========== MÉTODOS DE ARTÍCULOS ==========
+    // =========================
+    // ARTÍCULOS
+    // =========================
 
-    public void añadirArticulo(Articulo articulo) {
+    // Añade un artículo solo si no existe otro con el mismo código
+    public boolean añadirArticulo(Articulo articulo) {
+        if (buscarArticulo(articulo.getCodigo()) != null) {
+            return false;
+        }
+
         articulos.add(articulo);
+        return true;
     }
 
+    // Busca un artículo por su código
     public Articulo buscarArticulo(String codigo) {
         for (int i = 0; i < articulos.size(); i++) {
-            if (articulos.get(i).getCodigo().equals(codigo)) {
+            if (articulos.get(i).getCodigo().equalsIgnoreCase(codigo)) {
                 return articulos.get(i);
             }
         }
         return null;
     }
 
+    // Devuelve todos los artículos
     public ArrayList<Articulo> obtenerTodosArticulos() {
-        return articulos;
+        return new ArrayList<>(articulos);
     }
 
-    // ========== MÉTODOS DE PEDIDOS ==========
+    // =========================
+    // PEDIDOS
+    // =========================
 
-    public void crearPedido(String email, String codigoArticulo, int cantidad) {
-        // Buscar cliente
+    // Crea un pedido si el cliente existe, el artículo existe
+    // y la cantidad es mayor que 0
+    public boolean crearPedido(String email, String codigoArticulo, int cantidad) {
         Cliente cliente = buscarCliente(email);
-
-        // Buscar artículo
         Articulo articulo = buscarArticulo(codigoArticulo);
 
-        // Crear número de pedido (el tamaño actual + 1)
-        int numeroPedido = pedidos.size() + 1;
+        if (cliente == null || articulo == null || cantidad <= 0) {
+            return false;
+        }
 
-        // Crear y añadir pedido
-        Pedido nuevoPedido = new Pedido(numeroPedido, cliente, articulo, cantidad, LocalDateTime.now());
+        Pedido nuevoPedido = new Pedido(
+                siguienteNumeroPedido,
+                cliente,
+                articulo,
+                cantidad,
+                LocalDateTime.now()
+        );
+
         pedidos.add(nuevoPedido);
-        System.out.println("Pedido creado con número: " + numeroPedido);
+        siguienteNumeroPedido++;
+
+        return true;
     }
 
-    public void borrarPedido(int numeroPedido) {
+    // Borra un pedido solo si todavía se puede cancelar
+    public boolean borrarPedido(int numeroPedido) {
         for (int i = 0; i < pedidos.size(); i++) {
             if (pedidos.get(i).getNumeroPedido() == numeroPedido) {
                 if (pedidos.get(i).puedeCancelar()) {
                     pedidos.remove(i);
-                    System.out.println("Pedido cancelado");
+                    return true;
                 } else {
-                    System.out.println("No se puede cancelar, ya pasó el tiempo de preparación");
+                    return false;
                 }
-                return;
             }
         }
-        System.out.println("Pedido no encontrado");
+
+        return false;
     }
 
+    // Busca un pedido por su número
+    public Pedido buscarPedido(int numeroPedido) {
+        for (int i = 0; i < pedidos.size(); i++) {
+            if (pedidos.get(i).getNumeroPedido() == numeroPedido) {
+                return pedidos.get(i);
+            }
+        }
+        return null;
+    }
+
+    // Devuelve los pedidos que todavía no se han enviado
     public ArrayList<Pedido> obtenerPedidosPendientes() {
-        ArrayList<Pedido> pendientes = new ArrayList<>();
+        ArrayList<Pedido> lista = new ArrayList<>();
+
         for (int i = 0; i < pedidos.size(); i++) {
             if (pedidos.get(i).puedeCancelar()) {
-                pendientes.add(pedidos.get(i));
+                lista.add(pedidos.get(i));
             }
         }
-        return pendientes;
+
+        return lista;
     }
 
+    // Devuelve los pedidos que ya no se pueden cancelar
     public ArrayList<Pedido> obtenerPedidosEnviados() {
-        ArrayList<Pedido> enviados = new ArrayList<>();
+        ArrayList<Pedido> lista = new ArrayList<>();
+
         for (int i = 0; i < pedidos.size(); i++) {
             if (!pedidos.get(i).puedeCancelar()) {
-                enviados.add(pedidos.get(i));
+                lista.add(pedidos.get(i));
             }
         }
-        return enviados;
+
+        return lista;
     }
 
+    // Devuelve los pedidos pendientes de un cliente concreto
     public ArrayList<Pedido> obtenerPedidosPendientesCliente(String email) {
-        ArrayList<Pedido> pendientes = new ArrayList<>();
+        ArrayList<Pedido> lista = new ArrayList<>();
+
         for (int i = 0; i < pedidos.size(); i++) {
-            Pedido p = pedidos.get(i);
-            if (p.getCliente().getEmail().equals(email) && p.puedeCancelar()) {
-                pendientes.add(p);
+            Pedido pedidoActual = pedidos.get(i);
+
+            if (pedidoActual.getCliente().getEmail().equalsIgnoreCase(email) && pedidoActual.puedeCancelar()) {
+                lista.add(pedidoActual);
             }
         }
-        return pendientes;
+
+        return lista;
     }
 
+    // Devuelve los pedidos enviados de un cliente concreto
     public ArrayList<Pedido> obtenerPedidosEnviadosCliente(String email) {
-        ArrayList<Pedido> enviados = new ArrayList<>();
+        ArrayList<Pedido> lista = new ArrayList<>();
+
         for (int i = 0; i < pedidos.size(); i++) {
-            Pedido p = pedidos.get(i);
-            if (p.getCliente().getEmail().equals(email) && !p.puedeCancelar()) {
-                enviados.add(p);
+            Pedido pedidoActual = pedidos.get(i);
+
+            if (pedidoActual.getCliente().getEmail().equalsIgnoreCase(email) && !pedidoActual.puedeCancelar()) {
+                lista.add(pedidoActual);
             }
         }
-        return enviados;
+
+        return lista;
     }
 }

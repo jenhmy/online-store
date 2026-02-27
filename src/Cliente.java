@@ -1,11 +1,17 @@
-//Clase Cliente
 public abstract class Cliente {
-    protected String email;
-    protected String nombre;
-    protected String domicilio;
-    protected String nif;
 
-    //Constructor
+    // =========================
+    // DATOS DEL CLIENTE
+    // =========================
+    private String email;
+    private String nombre;
+    private String domicilio;
+    private String nif;
+
+    // =========================
+    // CONSTRUCTOR
+    // Sirve para crear un cliente nuevo
+    // =========================
     public Cliente(String email, String nombre, String domicilio, String nif) {
         this.email = email;
         this.nombre = nombre;
@@ -13,21 +19,50 @@ public abstract class Cliente {
         this.nif = nif;
     }
 
-    //Getters y setters
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    // =========================
+    // GETTERS Y SETTERS
+    // Sirven para leer y cambiar los datos
+    // =========================
+    public String getEmail() {
+        return email;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getDomicilio() { return domicilio; }
-    public void setDomicilio(String domicilio) { this.domicilio = domicilio; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getNif() { return nif; }
-    public void setNif(String nif) { this.nif = nif; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
+    public String getDomicilio() {
+        return domicilio;
+    }
+
+    public void setDomicilio(String domicilio) {
+        this.domicilio = domicilio;
+    }
+
+    public String getNif() {
+        return nif;
+    }
+
+    public void setNif(String nif) {
+        this.nif = nif;
+    }
+
+    // =========================
+    // TEXTO BASE PARA MOSTRAR EL CLIENTE
+    // =========================
     @Override
     public String toString() {
-        return nombre + " (" + email + ") - NIF: " + nif;
+        return "Nombre: " + nombre +
+                " | Email: " + email +
+                " | Domicilio: " + domicilio +
+                " | NIF: " + nif;
     }
 }
