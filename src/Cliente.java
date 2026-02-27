@@ -1,11 +1,11 @@
-package modelo;
-
+//Clase Cliente
 public abstract class Cliente {
     protected String email;
     protected String nombre;
     protected String domicilio;
     protected String nif;
 
+    //Constructor
     public Cliente(String email, String nombre, String domicilio, String nif) {
         this.email = email;
         this.nombre = nombre;
@@ -13,6 +13,7 @@ public abstract class Cliente {
         this.nif = nif;
     }
 
+    //Getters y setters
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
@@ -24,8 +25,6 @@ public abstract class Cliente {
 
     public String getNif() { return nif; }
     public void setNif(String nif) { this.nif = nif; }
-
-    public abstract double calcularEnvio(double gastosBase);
 
     @Override
     public String toString() {

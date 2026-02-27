@@ -1,14 +1,9 @@
-package modelo;
-
+//Subclase Cliente Estandar
 public class ClienteEstandar extends Cliente {
 
+    //Constructor
     public ClienteEstandar(String email, String nombre, String domicilio, String nif) {
         super(email, nombre, domicilio, nif);
-    }
-
-    @Override
-    public double calcularEnvio(double gastosBase) {
-        return gastosBase;
     }
 
     @Override

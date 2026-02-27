@@ -1,5 +1,3 @@
-package modelo;
-
 public class Articulo {
     private String codigo;
     private String descripcion;
